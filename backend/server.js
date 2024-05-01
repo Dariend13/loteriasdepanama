@@ -27,9 +27,35 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on('connection', (ws) => {
+  console.log('Cliente conectado');
+  ws.isAlive = true;
+
+  ws.on('pong', () => {
+    ws.isAlive = true;
+  });
+
   ws.on('message', (message) => {
     console.log('Received:', message);
   });
+
+  ws.on('close', () => {
+    console.log('Cliente desconectado');
+  });
+});
+
+// Intervalo para verificar la conexión
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws) {
+    if (ws.isAlive === false) return ws.terminate();
+
+    ws.isAlive = false;
+    ws.ping();
+  });
+}, 30000); // Ping cada 30 segundos
+
+// Limpieza en el cierre del servidor
+server.on('close', function close() {
+  clearInterval(interval);
 });
 
 const userRoutes = require('./routes/userRoutes');
