@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGODB_URI)
     console.error('Error al conectar a MongoDB:', err);
   });
 
-const allowedOrigins = ['http://localhost:3001', 'http://192.168.50.178:3005', 'http://101.188.67.134:3005','http://192.168.50.177:3005', 'http://localhost:3000', 'http://34.165.92.44', 'http://192.168.56.1:3000', 'http://172.21.84.245:3000', 'http://172.21.85.77:3000', 'http://172.21.85.123:3005', 'http://172.20.80.1:3000', 'http://localhost:3005'];
+const allowedOrigins = ['http://localhost:3001', 'http://192.168.50.178:3005', 'http://192.168.50.177:3005', 'http://localhost:3000', 'http://34.165.92.44', 'http://192.168.56.1:3000', 'http://172.21.84.245:3000', 'http://172.21.85.77:3000', 'http://172.21.85.123:3005', 'http://172.20.80.1:3000', 'http://localhost:3005'];
 
 // Crear el servidor HTTP
 const server = http.createServer(app);
