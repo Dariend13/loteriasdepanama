@@ -215,12 +215,19 @@ module.exports = function (wss) {
             }
 
             game.status = 'completed';
-
             await game.save();
 
-            // Aquí se envía una respuesta con un campo 'success' y el juego actualizado.
-            res.send({ success: true, game: game });
+            // Notificar a todos los clientes conectados sobre la actualización del juego
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        type: 'GAME_COMPLETED',
+                        data: game
+                    }));
+                }
+            });
 
+            res.send({ success: true, game: game });
         } catch (err) {
             res.status(400).send({ success: false, error: err.message });
         }
@@ -262,238 +269,253 @@ module.exports = function (wss) {
             req.body.fecha = momenttime.tz("America/Panama").startOf('day').toDate();
         }
 
-    try {
-        console.log("Buscando juego con ID:", req.params.id);
-        const originalGame = await MonazoGame.findById(req.params.id);
-        console.log("Juego encontrado:", originalGame);
-        if (!originalGame) {
-            return res.status(404).send({ nessage: 'Game not found' });
-        }
-        console.log('Juego original de La Tica:', originalGame._doc); // 2. Ver el juego original
-
-        const updatedGame = await MonazoGame.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedGame) {
-            return res.status(404).send({ message: 'Update failed' });
-        }
-
-        console.log('Juego actualizado de La Tica:', updatedGame._doc); // 3. Ver el juego actualizado
-
-        let changedField = null;
-        for (const field of expectedFieldsTica) {
-            if (updatedGame._doc[field] !== originalGame._doc[field]) {
-                changedField = field;
-                break;
+        try {
+            console.log("Buscando juego con ID:", req.params.id);
+            const originalGame = await MonazoGame.findById(req.params.id);
+            console.log("Juego encontrado:", originalGame);
+            if (!originalGame) {
+                return res.status(404).send({ nessage: 'Game not found' });
             }
+            console.log('Juego original de La Tica:', originalGame._doc); // 2. Ver el juego original
+
+            const updatedGame = await MonazoGame.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            if (!updatedGame) {
+                return res.status(404).send({ message: 'Update failed' });
+            }
+
+            console.log('Juego actualizado de La Tica:', updatedGame._doc); // 3. Ver el juego actualizado
+
+            let changedField = null;
+            for (const field of expectedFieldsTica) {
+                if (updatedGame._doc[field] !== originalGame._doc[field]) {
+                    changedField = field;
+                    break;
+                }
+            }
+
+            notifyClients(updatedGame, changedField);
+
+            res.send(updatedGame);
+        } catch (err) {
+            res.status(400).send({ error: err.message });
         }
+    });
 
-        notifyClients(updatedGame, changedField);
+    router.put('/complete/monazo/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+        try {
+            const game = await MonazoGame.findById(req.params.id);
+            if (!game) {
+                return res.status(404).send({ success: false, message: 'Game not found' });
+            }
 
-        res.send(updatedGame);
-    } catch (err) {
-        res.status(400).send({ error: err.message });
-    }
-});
+            game.status = 'completed';
+            await game.save();
 
-router.put('/complete/monazo/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const game = await MonazoGame.findById(req.params.id);
+            // Notificar a todos los clientes conectados
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        type: 'MONAZO_COMPLETED',
+                        data: game
+                    }));
+                }
+            });
 
-        if (!game) {
-            return res.status(404).send({ success: false, message: 'Game not found' });
+            res.send({ success: true, game: game });
+        } catch (err) {
+            res.status(400).send({ success: false, error: err.message });
         }
+    });
 
-        game.status = 'completed';
-        await game.save();
-        res.send({ success: true, game: game });
-    } catch (err) {
-        res.status(400).send({ success: false, error: err.message });
-    }
-});
+    // Obtener todos los juegos de Monazo
+    router.get('/monazolist', async (req, res) => {
+        try {
+            const games = await MonazoGame.find();
+            res.send(games);
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
-// Obtener todos los juegos de Monazo
-router.get('/monazolist', async (req, res) => {
-    try {
-        const games = await MonazoGame.find();
-        res.send(games);
-    } catch (err) {
-        res.status(500).send({ error: err.message });
-    }
-});
+    // Solo Juegos de Monazo en estado 'in-progress'
+    router.get('/monazo/listinprogress', async (req, res) => {
+        try {
+            const games = await MonazoGame.find({ status: 'in-progress' });  // Filtrar por status 'in-progress'
 
-// Solo Juegos de Monazo en estado 'in-progress'
-router.get('/monazo/listinprogress', async (req, res) => {
-    try {
-        const games = await MonazoGame.find({ status: 'in-progress' });  // Filtrar por status 'in-progress'
-
-        // Formatear las fechas de los juegos antes de enviar la respuesta
-        const formattedGames = games.map(game => ({
-            ...game._doc,  // Esto copia todos los campos del juego
-            fecha: formatDate(game.fecha)
-        }));
-
-        res.send(formattedGames);
-    } catch (err) {
-        res.status(500).send({ error: err.message });
-    }
-});
-
-router.get('/monazo/gamesOfWeek', async (req, res) => {
-    try {
-        // Buscar los últimos 5 juegos ordenados por fecha en orden descendente
-        const games = await MonazoGame.find()
-            .sort({ fecha: -1 }) // Ordenar por fecha en orden descendente
-            .limit(5); // Limitar a 5 resultados
-
-        // Formatear las fechas de los juegos antes de enviar la respuesta
-        const formattedGames = games.map(game => ({
-            ...game._doc,
-            fecha: formatDate(game.fecha)
-        }));
-
-        res.send(formattedGames);
-    } catch (err) {
-        console.error('Error al obtener los últimos 5 juegos de Monazo:', err);
-        res.status(500).send({ error: err.message });
-    }
-});
-
-//----------------------------------------JUEGOS DE LA TICA  ---------------------------------------
-// Agregar un nuevo juego de Tica
-router.post('/tica', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const game = new TicaGame(req.body);
-        await game.save();
-
-        // Formatear la fecha antes de enviarla a los clientes de WebSocket
-        const gameToSend = {
-            ...game._doc,
-            fecha: formatDate(game.fecha)
-        };
-
-        // Enviar el juego formateado a los clientes de WebSocket
-        wss.clients.forEach(client => {
-            client.send(JSON.stringify({
-                type: 'NEW_TICA_ADDED',
-                data: gameToSend
+            // Formatear las fechas de los juegos antes de enviar la respuesta
+            const formattedGames = games.map(game => ({
+                ...game._doc,  // Esto copia todos los campos del juego
+                fecha: formatDate(game.fecha)
             }));
-        });
 
-        res.status(201).send(game);
-    } catch (err) {
-        console.error('Error al guardar el juego de Tica:', err);
-        res.status(400).send({ error: err.message });
-    }
-});
+            res.send(formattedGames);
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
-// Actualizar un juego de La Tica
-router.put('/update/tica/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    delete req.body._id;
+    router.get('/monazo/gamesOfWeek', async (req, res) => {
+        try {
+            // Buscar los últimos 5 juegos ordenados por fecha en orden descendente
+            const games = await MonazoGame.find()
+                .sort({ fecha: -1 }) // Ordenar por fecha en orden descendente
+                .limit(5); // Limitar a 5 resultados
 
-    console.log('Datos recibidos para La Tica:', req.body); // 1. Ver los datos recibidos
+            // Formatear las fechas de los juegos antes de enviar la respuesta
+            const formattedGames = games.map(game => ({
+                ...game._doc,
+                fecha: formatDate(game.fecha)
+            }));
 
-    if (req.body.fecha === null) {
-        req.body.fecha = momenttime.tz("America/Panama").startOf('day').toDate();
-    }
+            res.send(formattedGames);
+        } catch (err) {
+            console.error('Error al obtener los últimos 5 juegos de Monazo:', err);
+            res.status(500).send({ error: err.message });
+        }
+    });
 
-    try {
-        console.log("Buscando juego con ID:", req.params.id);
-        const originalGame = await TicaGame.findById(req.params.id);
-        console.log("Juego encontrado:", originalGame);
-        if (!originalGame) {
-            return res.status(404).send({ message: 'Game not found' });
+    //----------------------------------------JUEGOS DE LA TICA  ---------------------------------------
+    // Agregar un nuevo juego de Tica
+    router.post('/tica', passport.authenticate('jwt', { session: false }), async (req, res) => {
+        try {
+            const game = new TicaGame(req.body);
+            await game.save();
+
+            // Formatear la fecha antes de enviarla a los clientes de WebSocket
+            const gameToSend = {
+                ...game._doc,
+                fecha: formatDate(game.fecha)
+            };
+
+            // Enviar el juego formateado a los clientes de WebSocket
+            wss.clients.forEach(client => {
+                client.send(JSON.stringify({
+                    type: 'NEW_TICA_ADDED',
+                    data: gameToSend
+                }));
+            });
+
+            res.status(201).send(game);
+        } catch (err) {
+            console.error('Error al guardar el juego de Tica:', err);
+            res.status(400).send({ error: err.message });
+        }
+    });
+
+    // Actualizar un juego de La Tica
+    router.put('/update/tica/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+        delete req.body._id;
+
+        console.log('Datos recibidos para La Tica:', req.body); // 1. Ver los datos recibidos
+
+        if (req.body.fecha === null) {
+            req.body.fecha = momenttime.tz("America/Panama").startOf('day').toDate();
         }
 
-        console.log('Juego original de La Tica:', originalGame._doc); // 2. Ver el juego original
-
-        const updatedGame = await TicaGame.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedGame) {
-            return res.status(404).send({ message: 'Update failed' });
-        }
-
-        console.log('Juego actualizado de La Tica:', updatedGame._doc); // 3. Ver el juego actualizado
-
-        let changedField = null;
-        for (const field of expectedFieldsTica) {
-            if (updatedGame._doc[field] !== originalGame._doc[field]) {
-                changedField = field;
-                break;
+        try {
+            console.log("Buscando juego con ID:", req.params.id);
+            const originalGame = await TicaGame.findById(req.params.id);
+            console.log("Juego encontrado:", originalGame);
+            if (!originalGame) {
+                return res.status(404).send({ message: 'Game not found' });
             }
+
+            console.log('Juego original de La Tica:', originalGame._doc); // 2. Ver el juego original
+
+            const updatedGame = await TicaGame.findByIdAndUpdate(req.params.id, req.body, { new: true });
+            if (!updatedGame) {
+                return res.status(404).send({ message: 'Update failed' });
+            }
+
+            console.log('Juego actualizado de La Tica:', updatedGame._doc); // 3. Ver el juego actualizado
+
+            let changedField = null;
+            for (const field of expectedFieldsTica) {
+                if (updatedGame._doc[field] !== originalGame._doc[field]) {
+                    changedField = field;
+                    break;
+                }
+            }
+
+            notifyClients(updatedGame, changedField);
+
+            res.send(updatedGame);
+        } catch (err) {
+            res.status(400).send({ error: err.message });
         }
+    });
 
-        notifyClients(updatedGame, changedField);
+    router.put('/complete/tica/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
+        try {
+            const game = await TicaGame.findById(req.params.id);
+            if (!game) {
+                return res.status(404).send({ success: false, message: 'Game not found' });
+            }
 
-        res.send(updatedGame);
-    } catch (err) {
-        res.status(400).send({ error: err.message });
-    }
-});
+            game.status = 'completed';
+            await game.save();
 
-router.put('/complete/tica/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const game = await TicaGame.findById(req.params.id);
+            // Notificar a todos los clientes conectados
+            wss.clients.forEach(client => {
+                if (client.readyState === WebSocket.OPEN) {
+                    client.send(JSON.stringify({
+                        type: 'TICA_COMPLETED',
+                        data: game
+                    }));
+                }
+            });
 
-        if (!game) {
-            return res.status(404).send({ success: false, message: 'Game not found' });
+            res.send({ success: true, game: game });
+        } catch (err) {
+            res.status(400).send({ success: false, error: err.message });
         }
+    });
 
-        game.status = 'completed';
+    // Obtener todos los juegos
+    router.get('/ticalist', async (req, res) => {
+        try {
+            const games = await TicaGame.find();
+            res.send(games);
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
-        await game.save();
+    //Solo Juegos en estado 'in-progress'
+    router.get('/tica/listinprogress', async (req, res) => {
+        try {
+            const games = await TicaGame.find({ status: 'in-progress' });  // Filtrar por status 'in-progress'
 
-        // Aquí se envía una respuesta con un campo 'success' y el juego actualizado.
-        res.send({ success: true, game: game });
+            // Formatear las fechas de los juegos antes de enviar la respuesta
+            const formattedGames = games.map(game => ({
+                ...game._doc,  // Esto copia todos los campos del juego
+                fecha: formatDate(game.fecha)
+            }));
 
-    } catch (err) {
-        res.status(400).send({ success: false, error: err.message });
-    }
-});
+            res.send(formattedGames);
+        } catch (err) {
+            res.status(500).send({ error: err.message });
+        }
+    });
 
+    router.get('/tica/gamesOfWeek', async (req, res) => {
+        try {
+            // Buscar los últimos 5 juegos ordenados por fecha en orden descendente
+            const games = await TicaGame.find()
+                .sort({ fecha: -1 }) // Ordenar por fecha en orden descendente
+                .limit(5); // Limitar a 5 resultados
 
-// Obtener todos los juegos
-router.get('/ticalist', async (req, res) => {
-    try {
-        const games = await TicaGame.find();
-        res.send(games);
-    } catch (err) {
-        res.status(500).send({ error: err.message });
-    }
-});
+            // Formatear las fechas de los juegos antes de enviar la respuesta
+            const formattedGames = games.map(game => ({
+                ...game._doc,
+                fecha: formatDate(game.fecha)
+            }));
 
-//Solo Juegos en estado 'in-progress'
-router.get('/tica/listinprogress', async (req, res) => {
-    try {
-        const games = await TicaGame.find({ status: 'in-progress' });  // Filtrar por status 'in-progress'
-
-        // Formatear las fechas de los juegos antes de enviar la respuesta
-        const formattedGames = games.map(game => ({
-            ...game._doc,  // Esto copia todos los campos del juego
-            fecha: formatDate(game.fecha)
-        }));
-
-        res.send(formattedGames);
-    } catch (err) {
-        res.status(500).send({ error: err.message });
-    }
-});
-
-router.get('/tica/gamesOfWeek', async (req, res) => {
-    try {
-        // Buscar los últimos 5 juegos ordenados por fecha en orden descendente
-        const games = await TicaGame.find()
-            .sort({ fecha: -1 }) // Ordenar por fecha en orden descendente
-            .limit(5); // Limitar a 5 resultados
-
-        // Formatear las fechas de los juegos antes de enviar la respuesta
-        const formattedGames = games.map(game => ({
-            ...game._doc,
-            fecha: formatDate(game.fecha)
-        }));
-
-        res.send(formattedGames);
-    } catch (err) {
-        console.error('Error al obtener los últimos 5 juegos de Tica:', err);
-        res.status(500).send({ error: err.message });
-    }
-});
-return router;
+            res.send(formattedGames);
+        } catch (err) {
+            console.error('Error al obtener los últimos 5 juegos de Tica:', err);
+            res.status(500).send({ error: err.message });
+        }
+    });
+    return router;
 };
