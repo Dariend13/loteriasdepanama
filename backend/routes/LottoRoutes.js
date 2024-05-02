@@ -46,12 +46,15 @@ module.exports = function (wss) {
     // Leer todos
     router.get('/lotto', async (req, res) => {
         try {
+            console.log("Fetching Lotto data...");
             const lottos = await Lotto.find();
+            console.log("Lotto data fetched:", lottos);
             res.json(lottos);
         } catch (err) {
+            console.error("Error fetching Lotto data:", err);
             res.status(500).json({ message: err.message });
         }
-    });
+    });    
 
     // Leer uno
     router.get('/lotto/:id', async (req, res) => {
