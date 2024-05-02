@@ -47,17 +47,19 @@ module.exports = function (wss) {
     router.get('/', async (req, res) => {
         try {
             console.log("Fetching Lotto data...");
-            // Agrega un ordenamiento descendente por la fecha y limita los resultados a 5
-            const lottos = await Lotto.find().sort({ date: -1 }).limit(5);
+            // Ordena por fecha de manera descendente y limita los resultados a los últimos 5 juegos
+            const lottos = await Lotto.find()
+                                      .sort({ date: -1 })
+                                      .limit(5);
+    
             console.log("Lotto data fetched:", lottos);
             res.json(lottos);
         } catch (err) {
             console.error("Error fetching Lotto data:", err);
             res.status(500).json({ message: err.message });
         }
-    });
+    });  
       
-
     // Leer uno
     router.get('/lotto/:id', async (req, res) => {
         try {
