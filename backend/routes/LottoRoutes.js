@@ -44,7 +44,7 @@ module.exports = function (wss) {
     // CRUD para Lotto
 
     // Leer todos
-    router.get('/lotto', async (req, res) => {
+    router.get('/', async (req, res) => {
         try {
             console.log("Fetching Lotto data...");
             const lottos = await Lotto.find();
