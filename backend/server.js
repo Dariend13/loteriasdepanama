@@ -80,7 +80,7 @@ app.use(express.json());
 app.use('/api/users', userRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/horoscope', horoscopeRoutes);
-app.use('/api/lottopega3', lottopega3Routes);
+app.use('/api/lotto', lottopega3Routes);
 app.use(passport.initialize());
 app.use('/dashboard', dashboardRoutes);
 
