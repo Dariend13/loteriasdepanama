@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Button, Modal, Box, TextField, Typography, IconButton, IconButton, Grid, FormControl, InputLabel, Select, MenuItem
+    Button, Modal, Box, TextField, Typography, IconButton, Grid, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import CloseIcon from '@mui/icons-material/Close';
