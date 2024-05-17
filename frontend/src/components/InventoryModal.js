@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Button, Modal, Box, TextField, Typography, IconButton, Chip, Grid, FormControl, InputLabel, Select, MenuItem
+    Button, Modal, Box, TextField, Typography, IconButton, IconButton, Grid, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import CloseIcon from '@mui/icons-material/Close';
@@ -57,6 +57,13 @@ const InventoryModal = ({ open, handleClose, handleSubmit, handleOpen }) => {
             aria-describedby="modal-modal-description"
         >
             <Box sx={style} component="form" onSubmit={(e) => handleSubmit(e, currentItem, images)}>
+                <IconButton
+                    color="inherit"
+                    onClick={handleClose}
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                >
+                    <CloseIcon />
+                </IconButton>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     Agregar Nuevo Inventario
                 </Typography>
