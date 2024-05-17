@@ -245,7 +245,7 @@ const Dashboard = () => {
     const loadGames = async () => {
         const token = sessionStorage.getItem('jwt');
         try {
-            const response = await axios.get('https://loteria.zipply.app/api/games/listinprogress', {
+            const response = await axios.get('/api/games/listinprogress', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -304,7 +304,7 @@ const Dashboard = () => {
         setCurrentGameId(null);
 
         try {
-            const response = await axios.post('https://loteria.zipply.app/api/games', formData, {
+            const response = await axios.post('/api/games', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -351,7 +351,7 @@ const Dashboard = () => {
             console.log('Datos enviados:', formData);
 
             // Actualiza el juego específico usando su ID
-            const response = await axios.put(`https://loteria.zipply.app/api/games/update/${currentGameId}`, formData, {
+            const response = await axios.put(`/api/games/update/${currentGameId}`, formData, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -386,7 +386,7 @@ const Dashboard = () => {
         const token = sessionStorage.getItem('jwt');
 
         try {
-            const response = await axios.put(`https://loteria.zipply.app/api/games/complete/${currentGameId}`, {}, {
+            const response = await axios.put(`/api/games/complete/${currentGameId}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -409,7 +409,7 @@ const Dashboard = () => {
     const handleLogout = async () => {
         try {
             // Realizar una petición al backend para cerrar la sesión
-            const response = await fetch('https://loteria.zipply.app/dashboard/logout');
+            const response = await fetch('/dashboard/logout');
 
             if (response.ok) {
                 // Eliminar el JWT de sessionStorage
@@ -459,7 +459,7 @@ const Dashboard = () => {
                 console.log('Datos enviados:', formData);
 
                 // Actualiza el juego específico usando su ID
-                const response = await axios.put(`https://loteria.zipply.app/api/games/update/tica/${currentGameId}`, formData, {
+                const response = await axios.put(`/api/games/update/tica/${currentGameId}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -479,7 +479,7 @@ const Dashboard = () => {
             const fetchGames = async () => {
                 const token = sessionStorage.getItem('jwt');
                 try {
-                    const response = await axios.get('https://loteria.zipply.app/api/games/tica/listinprogress', {
+                    const response = await axios.get('/api/games/tica/listinprogress', {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -519,7 +519,7 @@ const Dashboard = () => {
         const handleAddGame = async () => {
             const token = sessionStorage.getItem('jwt');
             try {
-                const response = await axios.post('https://loteria.zipply.app/api/games/tica', formData, {
+                const response = await axios.post('/api/games/tica', formData, {
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
@@ -538,7 +538,7 @@ const Dashboard = () => {
             const token = sessionStorage.getItem('jwt');
 
             try {
-                const response = await axios.put(`https://loteria.zipply.app/api/games/complete/tica/${currentGameId}`, {}, {
+                const response = await axios.put(`/api/games/complete/tica/${currentGameId}`, {}, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -677,7 +677,7 @@ const Dashboard = () => {
                     return;
                 }
 
-                const response = await axios.put(`https://loteria.zipply.app/api/games/update/monazo/${currentGameId}`, formData, {
+                const response = await axios.put(`/api/games/update/monazo/${currentGameId}`, formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -695,7 +695,7 @@ const Dashboard = () => {
             const fetchGames = async () => {
                 const token = sessionStorage.getItem('jwt');
                 try {
-                    const response = await axios.get('https://loteria.zipply.app/api/games/monazo/listinprogress', {
+                    const response = await axios.get('/api/games/monazo/listinprogress', {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -727,7 +727,7 @@ const Dashboard = () => {
         const handleAddGame = async () => {
             const token = sessionStorage.getItem('jwt');
             try {
-                const response = await axios.post('https://loteria.zipply.app/api/games/monazo', formData, {
+                const response = await axios.post('/api/games/monazo', formData, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -744,7 +744,7 @@ const Dashboard = () => {
             const token = sessionStorage.getItem('jwt');
 
             try {
-                const response = await axios.put(`https://loteria.zipply.app/api/games/complete/monazo/${currentGameId}`, {}, {
+                const response = await axios.put(`/api/games/complete/monazo/${currentGameId}`, {}, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

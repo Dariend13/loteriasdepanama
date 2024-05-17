@@ -29,7 +29,7 @@ const Horoscope = () => {
 
     const fetchHoroscopes = useCallback(async () => {
         try {
-            const response = await axios.get(`https://loteria.zipply.app/api/horoscope`);
+            const response = await axios.get(`/api/horoscope`);
             setHoroscopes(response.data);
         } catch (error) {
             console.error("Error al obtener los horóscopos:", error);
@@ -67,7 +67,7 @@ const Horoscope = () => {
     const finishEditing = async () => {
         if (editingHoroscope) {
             try {
-                const response = await axios.put(`https://loteria.zipply.app/api/horoscope/${editingHoroscope._id}`, {
+                const response = await axios.put(`/api/horoscope/${editingHoroscope._id}`, {
                     horoscope: prediccion,
                     date: new Date()
                 });
@@ -100,7 +100,7 @@ const Horoscope = () => {
         try {
             const horoscopeToUpdate = horoscopes.find(h => h.sign === signo);
             if (horoscopeToUpdate) {
-                const response = await axios.put(`https://loteria.zipply.app/api/horoscope/${horoscopeToUpdate._id}`, {
+                const response = await axios.put(`/api/horoscope/${horoscopeToUpdate._id}`, {
                     horoscope: prediccion,
                     date: new Date()
                 });
@@ -124,7 +124,7 @@ const Horoscope = () => {
 
     const resetHoroscopes = async () => {
         try {
-            const response = await axios.put(`https://loteria.zipply.app/api/horoscope/reset`);
+            const response = await axios.put(`/api/horoscope/reset`);
             if (response.status === 200) {
                 setSnackbarMessage("Horóscopos reiniciados con éxito.");
                 setOpenSnackbar(true);
@@ -140,7 +140,7 @@ const Horoscope = () => {
 
     const deleteHoroscope = async (id) => {
         try {
-            const response = await axios.delete(`https://loteria.zipply.app/api/horoscope/${id}`);
+            const response = await axios.delete(`/api/horoscope/${id}`);
 
             if (response.status === 200) {
                 setSnackbarMessage("Horóscopo eliminado exitosamente.");
@@ -158,7 +158,7 @@ const Horoscope = () => {
     const handleLogout = async () => {
         try {
             // Realizar una petición al backend para cerrar la sesión
-            const response = await fetch('https://loteria.zipply.app/dashboard/logout');
+            const response = await fetch('/dashboard/logout');
 
             if (response.ok) {
                 // Eliminar el JWT de sessionStorage

@@ -13,12 +13,14 @@ import {
 } from '@mui/material';
 import { LockOutlined } from '@mui/icons-material';
 import { animated, useTransition } from 'react-spring';
+import { getRoleFromJWT } from '../utils/AuthUtils'; 
 
 const AuthForm = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         username: '',
         password: '',
+        role: 'visitante'
     });
     const [message, setMessage] = useState('');
 
@@ -46,7 +48,7 @@ const AuthForm = () => {
         const endpoint = isLogin ? '/api/users/login' : '/api/users/register';
 
         try {
-            const response = await fetch(`https://loteria.zipply.app${endpoint}`, {
+            const response = await fetch(`${endpoint}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,15 +60,16 @@ const AuthForm = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setMessage(data.message);
-
-                if (data.success && isLogin) {
-                    // Guarda el token en sessionStorage
-                    sessionStorage.setItem('jwt', data.token);
-
-                    console.log("Intentando redireccionar al dashboard...");
-                    window.location.href = '/#/dashboard';
-                }
+                sessionStorage.setItem('jwt', data.token);
+                setTimeout(() => {
+                    const userRole = getRoleFromJWT();
+                    console.log(`User Role: ${userRole}`);
+                    const redirectPath = userRole === 'visitante' ? '/#/inventory' : '/#/dashboard';
+                    console.log(`Redirecting to ${redirectPath}`);
+                    window.location.href = redirectPath;
+                }, 100);  // Pequeño delay para asegurar que sessionStorage ya tiene el token
+            } else {
+                setMessage(data.message || 'Error al procesar la solicitud');
             }
 
             // Limpiar el formulario después de la respuesta

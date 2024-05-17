@@ -5,8 +5,19 @@ import Dashboard from './components/Dashboard';
 import GameHistory from './components/GameHistory';
 import Horoscope from './components/Horoscope';
 import Lotto from './components/Lotto';
+import Inventory from './components/Inventory';
 import { HashRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
+import { getRoleFromJWT } from './utils/AuthUtils'; // Asegúrate de que el path sea correcto
+import { Navigate } from 'react-router-dom';
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const userRole = getRoleFromJWT();
+  if (!userRole || !allowedRoles.includes(userRole)) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+};
 
 const MainComponent = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +26,7 @@ const MainComponent = () => {
   useEffect(() => {
     setIsLoading(true);
     const timer = setTimeout(() => setIsLoading(false), 1000); 
-    return () => clearTimeout(timer);  // limpieza en desmontar
+    return () => clearTimeout(timer);
   }, [location]);
 
   if (isLoading) {
@@ -47,13 +58,14 @@ const MainComponent = () => {
           </header>
         </div>
       } />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/gamehistory" element={<GameHistory />} />
-      <Route path="/horoscope" element={<Horoscope />} />
-      <Route path='/lotto' element={<Lotto />}/>
+      <Route path="/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><Dashboard /></ProtectedRoute>} />
+      <Route path="/gamehistory" element={<ProtectedRoute allowedRoles={['admin']}><GameHistory /></ProtectedRoute>} />
+      <Route path="/horoscope" element={<ProtectedRoute allowedRoles={['admin']}><Horoscope /></ProtectedRoute>} />
+      <Route path="/lotto" element={<ProtectedRoute allowedRoles={['admin']}><Lotto /></ProtectedRoute>} />
+      <Route path="/inventory" element={<ProtectedRoute allowedRoles={['visitante', 'admin']}><Inventory /></ProtectedRoute>} />
     </Routes>
   );
-}
+};
 
 function App() {
   return (

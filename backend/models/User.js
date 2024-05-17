@@ -10,11 +10,18 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    role: {
+        type: String,
+        required: true,
+        enum: ['admin', 'visitante'], // Enumerador para roles
+        default: 'visitante' // Valor por defecto es 'visitante'
     }
 });
 
 // Método para encriptar la contraseña antes de guardarla
 userSchema.pre('save', async function(next) {
+    // Si la contraseña fue modificada, entonces hasheamos
     if (this.isModified('password')) {
         this.password = await bcrypt.hash(this.password, 10);
     }

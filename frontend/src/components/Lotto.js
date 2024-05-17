@@ -38,7 +38,7 @@ const Lotto = () => {
         const loadGames = async () => {
             try {
                 // Realiza una petición GET para obtener los juegos
-                const response = await axios.get(`https://loteria.zipply.app/api/lottopega3/${gameType.toLowerCase()}`);
+                const response = await axios.get(`/api/lottopega3/${gameType.toLowerCase()}`);
 
                 // Si la respuesta es exitosa, filtra y establece los juegos en el estado
                 if (response.status === 200) {
@@ -80,7 +80,7 @@ const Lotto = () => {
         const token = sessionStorage.getItem('jwt');
 
         try {
-            const endpoint = `https://loteria.zipply.app/api/lottopega3/create/${gameType.toLowerCase()}`;
+            const endpoint = `/api/lottopega3/create/${gameType.toLowerCase()}`;
             const response = await axios.post(endpoint, formData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ const Lotto = () => {
 
         // Actualizar juego
         try {
-            const endpoint = `https://loteria.zipply.app/api/lottopega3/update/${gameType.toLowerCase()}/${selectedGame._id}`;
+            const endpoint = `/api/lottopega3/update/${gameType.toLowerCase()}/${selectedGame._id}`;
             await axios.put(endpoint, formData, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -154,7 +154,7 @@ const Lotto = () => {
         const token = sessionStorage.getItem('jwt');
     
         try {
-            const response = await axios.put(`https://loteria.zipply.app/api/lottopega3/complete/${gameType.toLowerCase()}/${currentGameId}`, {}, {
+            const response = await axios.put(`/api/lottopega3/complete/${gameType.toLowerCase()}/${currentGameId}`, {}, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -184,7 +184,7 @@ const Lotto = () => {
     const handleLogout = async () => {
         try {
             // Realizar una petición al backend para cerrar la sesión
-            const response = await fetch('https://loteria.zipply.app/dashboard/logout');
+            const response = await fetch('/dashboard/logout');
 
             if (response.ok) {
                 // Eliminar el JWT de sessionStorage

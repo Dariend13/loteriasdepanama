@@ -59,7 +59,7 @@ const GameHistory = () => {
     const handleSearch = async () => {
         const token = sessionStorage.getItem('jwt');
         try {
-            const response = await axios.get(`https://loteria.zipply.app/api/games/games?month=${selectedMonth}&year=${selectedYear}`, {
+            const response = await axios.get(`/api/games/games?month=${selectedMonth}&year=${selectedYear}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -73,7 +73,7 @@ const GameHistory = () => {
     const handleLogout = async () => {
         try {
             // Realizar una petición al backend para cerrar la sesión
-            const response = await fetch('https://loteria.zipply.app/dashboard/logout');
+            const response = await fetch('/dashboard/logout');
 
             if (response.ok) {
                 // Eliminar el JWT de sessionStorage

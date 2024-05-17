@@ -63,6 +63,7 @@ const gameRoutes = require('./routes/gameRoutes')(wss);
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const horoscopeRoutes = require('./routes/horoscopeRoutes')(wss);
 const lottopega3Routes = require('./routes/LottoRoutes')(wss);
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -77,19 +78,36 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+// Middleware para servir archivos estáticos del frontend de React
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+
+app.get('/', (req, res) => {
+  // Verificar si el acceso es desde localhost
+  if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
+    res.send('Bienvenido al modo de desarrollo del backend');
+  } else {
+    // Si no es localhost, sirve el archivo index.html del frontend
+    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  }
+});
+
+// APIs
 app.use('/api/users', userRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/horoscope', horoscopeRoutes);
 app.use('/api/lottopega3', lottopega3Routes);
-app.use(passport.initialize());
 app.use('/dashboard', dashboardRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
-// Middleware para servir archivos estáticos del frontend de React
-app.use(express.static(path.join(__dirname, '../frontend/build')));
-
-// Todas las rutas no manejadas se redirigen al frontend de React
+// Todas las rutas no manejadas y que no son localhost se redirigen al frontend de React
 app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  // Verificar si el acceso es desde localhost
+  if (req.hostname === 'localhost' || req.hostname === '127.0.0.1') {
+    res.status(404).send('404 Not Found');
+  } else {
+    // Si no es localhost, sirve el archivo index.html del frontend
+    res.sendFile(path.resolve(__dirname, '../frontend', 'build', 'index.html'));
+  }
 });
 
 server.listen(PORT, '0.0.0.0', () => {

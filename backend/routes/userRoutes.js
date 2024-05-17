@@ -9,23 +9,21 @@ dotenv.config();
 const router = express.Router();
 
 // Registro
-// Registro
 router.post('/register', async (req, res) => {
     try {
         const user = new User({
             username: req.body.username,
-            password: req.body.password
+            password: req.body.password,
+            role: req.body.role  // Asume que el rol se envía en la solicitud
         });
         await user.save();
-        
+
         // Después de registrar con éxito, redirigir al usuario al dashboard
-        res.redirect('/#/dashboard'); // Cambia '/dashboard' a la URL real de tu dashboard
+        res.redirect('/#/dashboard'); // Ajusta esto según la lógica de tu aplicación
     } catch (err) {
         res.status(400).send({ error: err.message });
     }
 });
-
-
 
 // Inicio de sesión
 router.post('/login', (req, res, next) => {
@@ -42,7 +40,11 @@ router.post('/login', (req, res, next) => {
         next();
     })(req, res, next);
 }, (req, res) => {
-    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign(
+        { id: req.user.id, role: req.user.role }, // Añadir el rol del usuario al token
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+    );
     res.send({ message: 'Logged in successfully', token, success: true });
 });
 
