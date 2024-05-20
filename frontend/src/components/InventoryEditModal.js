@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Button, Modal, Box, TextField, Typography, Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress
+    Button, Modal, Box, TextField, Typography, Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress, IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
@@ -103,6 +104,13 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
             aria-describedby="modal-modal-description"
         >
             <Box sx={style} component="form" onSubmit={(e) => handleSubmit(e, currentItem, images)}>
+                <IconButton
+                    color="inherit"
+                    onClick={handleClose}
+                    sx={{ position: 'absolute', top: 8, right: 8 }}
+                >
+                    <CloseIcon />
+                </IconButton>
                 <Typography id="modal-modal-title" variant="h6" component="h2">
                     {readOnly ? "Ver Inventario" : "Edit Item"}
                 </Typography>
