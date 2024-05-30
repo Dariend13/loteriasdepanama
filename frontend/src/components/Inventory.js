@@ -335,16 +335,18 @@ const Inventory = () => {
                     <IconButton onClick={() => handleOpenModal(rowData, 'view')} style={{ color: 'blue' }}>
                       <VisibilityIcon />
                     </IconButton>
-                    {userRole === 'admin' && (
-                      <>
-                        <IconButton onClick={() => handleOpenModal(rowData, 'edit')} style={{ color: 'green' }}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleDeleteClick(rowData._id)} style={{ color: 'red' }}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </>
-                    )}
+                    {
+                      (userRole === 'admin' || userRole === 'visitante') && (
+                        <>
+                          <IconButton onClick={() => handleOpenModal(rowData, 'edit')} style={{ color: 'green' }}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton onClick={() => handleDeleteClick(rowData._id)} style={{ color: 'red' }}>
+                            <DeleteIcon />
+                          </IconButton>
+                        </>
+                      )
+                    }
                   </>
                 )
               }
