@@ -336,7 +336,6 @@ const Inventory = () => {
                       <VisibilityIcon />
                     </IconButton>
                     {
-                      (userRole === 'admin' || userRole === 'visitante') && (
                         <>
                           <IconButton onClick={() => handleOpenModal(rowData, 'edit')} style={{ color: 'green' }}>
                             <EditIcon />
@@ -345,7 +344,6 @@ const Inventory = () => {
                             <DeleteIcon />
                           </IconButton>
                         </>
-                      )
                     }
                   </>
                 )
