@@ -306,16 +306,16 @@ const Inventory = () => {
       {/* Main Content */}
       <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, backgroundColor: '#f4f4f4' }}>
         <Container maxWidth="lg">
-          <Button onClick={() => handleOpenModal(null, 'add')}>Add New Item</Button>
+          <Button variant="outlined" onClick={() => handleOpenModal(null, 'add')}>Agregar</Button>
           <MaterialTable
-            title="Inventory"
+            title="Inventario FAECO"
             columns={[
-              { title: 'Brand', field: 'brand' },
-              { title: 'Model', field: 'model' },
-              { title: 'Serial Number', field: 'serialNumber' },
-              { title: 'Inventory Number', field: 'inventoryNumber' },
+              { title: 'Marca', field: 'brand' },
+              { title: 'Modelo', field: 'model' },
+              { title: '# Serial', field: 'serialNumber' },
+              { title: '# de Inventario', field: 'inventoryNumber' },
               {
-                title: 'Condition',
+                title: 'Condicion',
                 field: 'condition',
                 render: rowData => {
                   const colorMap = {
@@ -328,7 +328,7 @@ const Inventory = () => {
                 }
               },
               {
-                title: 'Actions',
+                title: 'Acciones',
                 field: 'actions',
                 render: rowData => (
                   <>
@@ -353,11 +353,17 @@ const Inventory = () => {
             options={{
               actionsColumnIndex: -1,
               exportMenu: [{
-                label: 'Export PDF',
-                exportFunc: (cols, datas) => ExportPdf(cols, datas, 'Inventory_PDF')
+                label: 'Exportar PDF',
+                exportFunc: (cols, datas) => {
+                  const filteredCols = cols.filter(col => col.field !== 'actions');
+                  ExportPdf(filteredCols, datas, 'InventarioFAECO_PDF')
+                }
               }, {
-                label: 'Export CSV',
-                exportFunc: (cols, datas) => ExportCsv(cols, datas, 'Inventory_CSV')
+                label: 'Exportar CSV',
+                exportFunc: (cols, datas) => {
+                  const filteredCols = cols.filter(col => col.field !== 'actions');
+                  ExportCsv(filteredCols, datas, 'InventarioFAECO_CSV')
+                }
               }]
             }}
           />
