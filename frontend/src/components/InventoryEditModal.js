@@ -27,7 +27,8 @@ const fieldLabels = {
     inventoryNumber: "Número de Inventario",
     condition: "Condición",
     description: "Descripción",
-    additionalInformation: "Información Adicional"
+    additionalInformation: "Información Adicional",
+    ubication: "Ubicacion"
 };
 
 const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem, readOnly = false }) => {
@@ -116,7 +117,7 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
                 </Typography>
                 <Grid container spacing={2}>
                     {Object.keys(fieldLabels).map((field) => (
-                        <Grid item xs={12} sm={field === 'description' || field === 'additionalInformation' ? 12 : 6} key={field}>
+                        <Grid item xs={12} sm={field === 'description' || field === 'additionalInformation' || field === 'ubication' ? 12 : 6} key={field}>
                             {field === 'condition' ? (
                                 <FormControl fullWidth margin="normal">
                                     <InputLabel>{fieldLabels[field]}</InputLabel>
@@ -124,7 +125,7 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
                                         label={fieldLabels[field]}
                                         name={field}
                                         value={currentItem[field]}
-                                        onChange={(e) => setCurrentItem({ ...currentItem, condition: e.target.value })}
+                                        onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
                                         disabled={readOnly}
                                     >
                                         <MenuItem value="Excelente">Excelente</MenuItem>

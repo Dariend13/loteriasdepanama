@@ -37,7 +37,10 @@ const InventorySchema = new mongoose.Schema({
   }],
   notes: {
     type: String
-  }
+  }, 
+  ubication: {
+    type: String,
+  },
 }, { timestamps: true });
 
 const Inventory = mongoose.model('Inventory', InventorySchema);

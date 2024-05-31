@@ -24,6 +24,7 @@ const defaultItem = {
     model: '',
     serialNumber: '',
     inventoryNumber: '',
+    location: '',
     condition: '',
     description: '',
     additionalInformation: '',
@@ -88,6 +89,16 @@ const InventoryModal = ({ open, handleClose, handleSubmit, handleOpen }) => {
                             </Grid>
                         ))
                     }
+                    <Grid item xs={12}>
+                        <TextField
+                            margin="normal"
+                            fullWidth
+                            label="Ubicación"  // Etiqueta visible para el usuario
+                            name="ubication"
+                            value={currentItem.ubication || ''}  // Asegura que el valor inicial sea una cadena vacía si es undefined
+                            onChange={(e) => setCurrentItem({ ...currentItem, ubication: e.target.value })}
+                        />
+                    </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth margin="normal">
                             <InputLabel>Condición</InputLabel>
