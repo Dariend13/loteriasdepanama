@@ -248,6 +248,33 @@ const Inventory = () => {
     }
   };
 
+  const exportColumns = [
+    { title: 'Marca', field: 'brand' },
+    { title: 'Modelo', field: 'model' },
+    { title: '# Serial', field: 'serialNumber' },
+    { title: '# de Inventario', field: 'inventoryNumber' },
+    { title: 'Ubicación', field: 'ubication' },
+    { title: 'Condición', field: 'condition', render: rowData => rowData.condition }
+  ];
+
+  const exportData = async (exportFunc) => {
+    const token = sessionStorage.getItem('jwt');
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    };
+    try {
+      const response = await axios.get('/api/inventory', config);
+      if (response.data) {
+        exportFunc(exportColumns, response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch full inventory for export:', error);
+      enqueueSnackbar('Error al cargar el inventario completo para exportar.', { variant: 'error' });
+    }
+  };
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -314,6 +341,7 @@ const Inventory = () => {
               { title: 'Modelo', field: 'model' },
               { title: '# Serial', field: 'serialNumber' },
               { title: '# de Inventario', field: 'inventoryNumber' },
+              { title: 'Ubicacion', field: 'ubication' },
               {
                 title: 'Condicion',
                 field: 'condition',
@@ -336,14 +364,14 @@ const Inventory = () => {
                       <VisibilityIcon />
                     </IconButton>
                     {
-                        <>
-                          <IconButton onClick={() => handleOpenModal(rowData, 'edit')} style={{ color: 'green' }}>
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton onClick={() => handleDeleteClick(rowData._id)} style={{ color: 'red' }}>
-                            <DeleteIcon />
-                          </IconButton>
-                        </>
+                      <>
+                        <IconButton onClick={() => handleOpenModal(rowData, 'edit')} style={{ color: 'green' }}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteClick(rowData._id)} style={{ color: 'red' }}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </>
                     }
                   </>
                 )
@@ -354,16 +382,10 @@ const Inventory = () => {
               actionsColumnIndex: -1,
               exportMenu: [{
                 label: 'Exportar PDF',
-                exportFunc: (cols, datas) => {
-                  const filteredCols = cols.filter(col => col.field !== 'actions');
-                  ExportPdf(filteredCols, datas, 'InventarioFAECO_PDF')
-                }
+                exportFunc: (cols, datas) => exportData((cols, datas) => ExportPdf(cols, datas, 'InventarioFAECO_PDF')),
               }, {
                 label: 'Exportar CSV',
-                exportFunc: (cols, datas) => {
-                  const filteredCols = cols.filter(col => col.field !== 'actions');
-                  ExportCsv(filteredCols, datas, 'InventarioFAECO_CSV')
-                }
+                exportFunc: (cols, datas) => exportData((cols, datas) => ExportCsv(cols, datas, 'InventarioFAECO_CSV')),
               }]
             }}
           />
