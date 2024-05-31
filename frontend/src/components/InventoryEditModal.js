@@ -3,6 +3,8 @@ import {
     Button, Modal, Box, TextField, Typography, Grid, FormControl, InputLabel, Select, MenuItem, CircularProgress, IconButton
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DownloadIcon from '@mui/icons-material/Download';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 
@@ -28,13 +30,15 @@ const fieldLabels = {
     condition: "Condición",
     description: "Descripción",
     additionalInformation: "Información Adicional",
-    ubication: "Ubicacion"
+    ubication: "Ubicación"
 };
 
 const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem, readOnly = false }) => {
     const [currentItem, setCurrentItem] = useState(item || {});
     const [images, setImages] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [imageModalOpen, setImageModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState('');
     const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
@@ -91,6 +95,24 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
             console.error('Error submitting the form:', error);
             enqueueSnackbar('Error al editar el item.', { variant: 'error' });
         }
+    };
+
+    const openImageModal = (url) => {
+        setSelectedImage(url);
+        setImageModalOpen(true);
+    };
+
+    const closeImageModal = () => {
+        setImageModalOpen(false);
+    };
+
+    const downloadImage = (url) => {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Download';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     if (loading) {
@@ -154,6 +176,14 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
                             {images.map((img, index) => (
                                 <Box key={index} sx={{ position: 'relative', width: 200, height: 200 }}>
                                     <img src={img.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <Box sx={{ position: 'absolute', top: 0, right: 0, display: 'flex' }}>
+                                        <IconButton onClick={() => openImageModal(img.url)}>
+                                            <VisibilityIcon />
+                                        </IconButton>
+                                        <IconButton onClick={() => downloadImage(img.url)}>
+                                            <DownloadIcon />
+                                        </IconButton>
+                                    </Box>
                                 </Box>
                             ))}
                         </Box>
@@ -165,6 +195,18 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
                     </Button>
                 )}
             </Box>
+
+            {/* Image Modal */}
+            <Modal
+                open={imageModalOpen}
+                onClose={closeImageModal}
+                aria-labelledby="image-modal-title"
+                aria-describedby="image-modal-description"
+            >
+                <Box sx={{ ...style, width: 'auto', maxWidth: '90%', height: 'auto', maxHeight: '90vh' }}>
+                    <img src={selectedImage} alt="Full size" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </Box>
+            </Modal>
         </Modal>
     );
 };
