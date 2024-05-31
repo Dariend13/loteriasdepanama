@@ -23,7 +23,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Ruta para crear una nueva entrada de computadora
-router.post('/', passport.authenticate('jwt', { session: false }), upload.array('images', 5), async (req, res) => {
+router.post('/', passport.authenticate('jwt', { session: false }), upload.array('images', 12), async (req, res) => {
     try {
         const imagesUrls = [];
         if (req.files && req.files.length > 0) {
