@@ -22,6 +22,18 @@ const style = {
     maxHeight: '90vh',
 };
 
+const modalImageStyle = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '80%', // Controla el tamaño del modal de imagen
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+    overflowY: 'auto'
+};
+
 const fieldLabels = {
     brand: "Marca",
     model: "Modelo",
@@ -120,94 +132,95 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
     }
 
     return (
-        <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-        >
-            <Box sx={style} component="form" onSubmit={(e) => handleSubmit(e, currentItem, images)}>
-                <IconButton
-                    color="inherit"
-                    onClick={handleClose}
-                    sx={{ position: 'absolute', top: 8, right: 8 }}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <Typography id="modal-modal-title" variant="h6" component="h2">
-                    {readOnly ? "Ver Inventario" : "Edit Item"}
-                </Typography>
-                <Grid container spacing={2}>
-                    {Object.keys(fieldLabels).map((field) => (
-                        <Grid item xs={12} sm={field === 'description' || field === 'additionalInformation' || field === 'ubication' ? 12 : 6} key={field}>
-                            {field === 'condition' ? (
-                                <FormControl fullWidth margin="normal">
-                                    <InputLabel>{fieldLabels[field]}</InputLabel>
-                                    <Select
+        <>
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style} component="form" onSubmit={(e) => handleSubmit(e, currentItem, images)}>
+                    <IconButton
+                        color="inherit"
+                        onClick={handleClose}
+                        sx={{ position: 'absolute', top: 8, right: 8 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography id="modal-modal-title" variant="h6" component="h2">
+                        {readOnly ? "Ver Inventario" : "Edit Item"}
+                    </Typography>
+                    <Grid container spacing={2}>
+                        {Object.keys(fieldLabels).map((field) => (
+                            <Grid item xs={12} sm={field === 'description' || field === 'additionalInformation' || field === 'ubication' ? 12 : 6} key={field}>
+                                {field === 'condition' ? (
+                                    <FormControl fullWidth margin="normal">
+                                        <InputLabel>{fieldLabels[field]}</InputLabel>
+                                        <Select
+                                            label={fieldLabels[field]}
+                                            name={field}
+                                            value={currentItem[field]}
+                                            onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
+                                            disabled={readOnly}
+                                        >
+                                            <MenuItem value="Excelente">Excelente</MenuItem>
+                                            <MenuItem value="Bueno">Bueno</MenuItem>
+                                            <MenuItem value="Decente">Decente</MenuItem>
+                                            <MenuItem value="Malo">Malo</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                ) : (
+                                    <TextField
+                                        margin="normal"
+                                        fullWidth
                                         label={fieldLabels[field]}
                                         name={field}
                                         value={currentItem[field]}
                                         onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
+                                        multiline={field === 'description' || field === 'additionalInformation'}
+                                        rows={field === 'description' || field === 'additionalInformation' ? 4 : 1}
                                         disabled={readOnly}
-                                    >
-                                        <MenuItem value="Excelente">Excelente</MenuItem>
-                                        <MenuItem value="Bueno">Bueno</MenuItem>
-                                        <MenuItem value="Decente">Decente</MenuItem>
-                                        <MenuItem value="Malo">Malo</MenuItem>
-                                    </Select>
-                                </FormControl>
-                            ) : (
-                                <TextField
-                                    margin="normal"
-                                    fullWidth
-                                    label={fieldLabels[field]}
-                                    name={field}
-                                    value={currentItem[field]}
-                                    onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
-                                    multiline={field === 'description' || field === 'additionalInformation'}
-                                    rows={field === 'description' || field === 'additionalInformation' ? 4 : 1}
-                                    disabled={readOnly}
-                                />
-                            )}
-                        </Grid>
-                    ))}
-                    <Grid item xs={12}>
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
-                            {images.map((img, index) => (
-                                <Box key={index} sx={{ position: 'relative', width: 200, height: 200 }}>
-                                    <img src={img.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                    <Box sx={{ position: 'absolute', top: 0, right: 0, display: 'flex' }}>
-                                        <IconButton onClick={() => openImageModal(img.url)}>
-                                            <VisibilityIcon />
-                                        </IconButton>
-                                        <IconButton onClick={() => downloadImage(img.url)}>
-                                            <DownloadIcon />
-                                        </IconButton>
+                                    />
+                                )}
+                            </Grid>
+                        ))}
+                        <Grid item xs={12}>
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                                {images.map((img, index) => (
+                                    <Box key={index} sx={{ position: 'relative', width: 200, height: 200 }}>
+                                        <img src={img.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                        <Box sx={{ position: 'absolute', top: 0, right: 0, display: 'flex' }}>
+                                            <IconButton onClick={() => openImageModal(img.url)} size="small">
+                                                <VisibilityIcon />
+                                            </IconButton>
+                                            <IconButton onClick={() => downloadImage(img.url)} size="small">
+                                                <DownloadIcon />
+                                            </IconButton>
+                                        </Box>
                                     </Box>
-                                </Box>
-                            ))}
-                        </Box>
+                                ))}
+                            </Box>
+                        </Grid>
                     </Grid>
-                </Grid>
-                {!readOnly && (
-                    <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                        Update
-                    </Button>
-                )}
-            </Box>
-
-            {/* Image Modal */}
+                    {!readOnly && (
+                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                            Update
+                        </Button>
+                    )}
+                </Box>
+            </Modal>
+            {/* Modal for viewing the image in a larger size */}
             <Modal
                 open={imageModalOpen}
                 onClose={closeImageModal}
                 aria-labelledby="image-modal-title"
                 aria-describedby="image-modal-description"
             >
-                <Box sx={{ ...style, width: 'auto', maxWidth: '90%', height: 'auto', maxHeight: '90vh' }}>
+                <Box sx={modalImageStyle}>
                     <img src={selectedImage} alt="Full size" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                 </Box>
             </Modal>
-        </Modal>
+        </>
     );
 };
 
