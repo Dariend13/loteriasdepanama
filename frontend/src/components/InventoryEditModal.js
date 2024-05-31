@@ -76,7 +76,7 @@ const InventoryEditModal = ({ open, handleClose, item, fetchInventory, fetchItem
         try {
             const response = await axios({
                 method: 'put',
-                url: `https://loteria.zipply.app/api/inventory/${item._id}`,
+                url: `https://panel2.zipply.app/api/inventory/${item._id}`,
                 data: formData,
                 headers: config.headers
             });

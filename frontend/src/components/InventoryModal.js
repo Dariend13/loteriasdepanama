@@ -68,23 +68,31 @@ const InventoryModal = ({ open, handleClose, handleSubmit, handleOpen }) => {
                     Agregar Nuevo Inventario
                 </Typography>
                 <Grid container spacing={2}>
-                    {['brand', 'model', 'serialNumber', 'inventoryNumber'].map((field, index) => (
-                        <Grid item xs={12} sm={6} key={field}>
-                            <TextField
-                                margin="normal"
-                                fullWidth
-                                label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1').trim()}
-                                name={field}
-                                value={currentItem[field]}
-                                onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
-                            />
-                        </Grid>
-                    ))}
+                    {
+                        // Mapeo de los campos con su correspondiente etiqueta en español
+                        [
+                            { field: 'brand', label: 'Marca' },
+                            { field: 'model', label: 'Modelo' },
+                            { field: 'serialNumber', label: 'Número de Serie' },
+                            { field: 'inventoryNumber', label: 'Número de Inventario' }
+                        ].map(({ field, label }) => (
+                            <Grid item xs={12} sm={6} key={field}>
+                                <TextField
+                                    margin="normal"
+                                    fullWidth
+                                    label={label}
+                                    name={field}
+                                    value={currentItem[field]}
+                                    onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
+                                />
+                            </Grid>
+                        ))
+                    }
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth margin="normal">
-                            <InputLabel>Condicion</InputLabel>
+                            <InputLabel>Condición</InputLabel>
                             <Select
-                                label="Condition"
+                                label="Condición"
                                 name="condition"
                                 value={currentItem.condition}
                                 onChange={(e) => setCurrentItem({ ...currentItem, condition: e.target.value })}
@@ -97,7 +105,7 @@ const InventoryModal = ({ open, handleClose, handleSubmit, handleOpen }) => {
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} sm={6}>
-                        <IconButton color="primary" aria-label="upload picture" component="span" onClick={() => document.getElementById('icon-button-file').click()}>
+                        <IconButton color="primary" aria-label="subir imagen" component="span" onClick={() => document.getElementById('icon-button-file').click()}>
                             <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
                             <PhotoCamera />
                         </IconButton>
@@ -116,20 +124,26 @@ const InventoryModal = ({ open, handleClose, handleSubmit, handleOpen }) => {
                             ))}
                         </Box>
                     </Grid>
-                    {['description', 'additionalInformation'].map((field, index) => (
-                        <Grid item xs={12} key={field}>
-                            <TextField
-                                margin="normal"
-                                fullWidth
-                                label={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1').trim()}
-                                name={field}
-                                value={currentItem[field]}
-                                onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
-                                multiline
-                                rows={4}
-                            />
-                        </Grid>
-                    ))}
+                    {
+                        // Mapeo de los campos adicionales con su correspondiente etiqueta en español
+                        [
+                            { field: 'description', label: 'Descripción' },
+                            { field: 'additionalInformation', label: 'Información Adicional' }
+                        ].map(({ field, label }) => (
+                            <Grid item xs={12} key={field}>
+                                <TextField
+                                    margin="normal"
+                                    fullWidth
+                                    label={label}
+                                    name={field}
+                                    value={currentItem[field]}
+                                    onChange={(e) => setCurrentItem({ ...currentItem, [field]: e.target.value })}
+                                    multiline
+                                    rows={4}
+                                />
+                            </Grid>
+                        ))
+                    }
                 </Grid>
                 <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                     Add
