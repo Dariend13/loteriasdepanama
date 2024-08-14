@@ -7,7 +7,7 @@ import Horoscope from './components/Horoscope';
 import Lotto from './components/Lotto';
 import Inventory from './components/Inventory';
 import Terms from './components/Terms';
-import { HashRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { getRoleFromJWT } from './utils/AuthUtils';
 import { Navigate } from 'react-router-dom';
