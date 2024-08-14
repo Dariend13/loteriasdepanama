@@ -6,41 +6,24 @@ const PrivacyPolicy = () => {
             <h1 style={{ textAlign: 'center' }}>Política de Privacidad</h1>
             <p>Última actualización: 12 de agosto de 2024</p>
 
-            <p>En Zipply Tech, valoramos tu privacidad y estamos comprometidos a proteger la información personal que compartes con nosotros a través de nuestra aplicación. Esta política de privacidad describe cómo recopilamos, usamos y protegemos tu información.</p>
+            <p>En Zipply Tech, respetamos tu privacidad y estamos comprometidos a proteger cualquier información que pueda ser recopilada de manera automática cuando utilizas nuestra aplicación. Sin embargo, es importante destacar que nuestra aplicación no requiere que te registres ni que inicies sesión, y no recopilamos ni almacenamos información personal identificable.</p>
 
-            <h2>1. Información que Recopilamos</h2>
-            <p>Podemos recopilar la siguiente información cuando utilizas nuestra aplicación:</p>
-            <ul>
-                <li><strong>Información Personal:</strong> Como tu nombre, dirección de correo electrónico y otros detalles que puedas proporcionar voluntariamente.</li>
-                <li><strong>Datos de Uso:</strong> Información sobre cómo interactúas con la aplicación, incluyendo tu dirección IP, tipo de dispositivo, sistema operativo, y datos de navegación.</li>
-            </ul>
+            <h2>1. Información que No Recopilamos</h2>
+            <p>Nuestra aplicación no recopila información personal como nombres, direcciones de correo electrónico, números de teléfono u otra información identificable.</p>
 
-            <h2>2. Uso de la Información</h2>
-            <p>Utilizamos la información que recopilamos para los siguientes propósitos:</p>
-            <ul>
-                <li>Proveer y mejorar nuestro servicio.</li>
-                <li>Personalizar la experiencia del usuario.</li>
-                <li>Comunicarnos contigo para informarte sobre actualizaciones o responder a tus consultas.</li>
-            </ul>
+            <h2>2. Datos de Uso</h2>
+            <p>Nuestra aplicación puede recopilar información básica sobre el dispositivo que utilizas, como el tipo de dispositivo, sistema operativo y dirección IP, únicamente con fines de análisis y para mejorar la experiencia del usuario. Estos datos son anónimos y no se pueden utilizar para identificarte personalmente.</p>
 
-            <h2>3. Compartir Información</h2>
-            <p>No compartimos tu información personal con terceros, salvo en las siguientes circunstancias:</p>
-            <ul>
-                <li>Cuando sea requerido por ley.</li>
-                <li>Para proteger nuestros derechos y los derechos de nuestros usuarios.</li>
-                <li>Con proveedores de servicios que nos ayudan a operar nuestra aplicación, bajo estrictos acuerdos de confidencialidad.</li>
-            </ul>
+            <h2>3. Uso de la Información Recopilada</h2>
+            <p>La información anónima que recopilamos se utiliza exclusivamente para mejorar la funcionalidad de la aplicación y garantizar que funcione correctamente en una variedad de dispositivos.</p>
 
-            <h2>4. Seguridad de la Información</h2>
-            <p>Implementamos medidas de seguridad para proteger tu información personal, pero no podemos garantizar la seguridad total de los datos transmitidos a través de internet.</p>
+            <h2>4. Seguridad</h2>
+            <p>Nos comprometemos a proteger cualquier información que pueda ser recopilada automáticamente. Utilizamos medidas estándar de seguridad para garantizar la integridad de los datos, aunque es importante señalar que no almacenamos información personal.</p>
 
-            <h2>5. Tus Derechos</h2>
-            <p>Tienes derecho a acceder, rectificar o eliminar tu información personal en cualquier momento. Para ejercer estos derechos, puedes contactarnos en <a href="mailto:support@zipplytech.com">support@zipplytech.com</a>.</p>
+            <h2>5. Cambios a esta Política</h2>
+            <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Cualquier cambio se reflejará en esta página, y te recomendamos revisarla periódicamente.</p>
 
-            <h2>6. Cambios a esta Política</h2>
-            <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Te notificaremos sobre cualquier cambio publicando la nueva política en esta página.</p>
-
-            <h2>7. Contacto</h2>
+            <h2>6. Contacto</h2>
             <p>Si tienes alguna pregunta sobre nuestra política de privacidad, no dudes en contactarnos en <a href="mailto:support@zipplytech.com">support@zipplytech.com</a>.</p>
         </div>
     );
