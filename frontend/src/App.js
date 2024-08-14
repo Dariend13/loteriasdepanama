@@ -6,6 +6,7 @@ import GameHistory from './components/GameHistory';
 import Horoscope from './components/Horoscope';
 import Lotto from './components/Lotto';
 import Inventory from './components/Inventory';
+import Terms from './components/Terms';
 import { HashRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { getRoleFromJWT } from './utils/AuthUtils'; // Asegúrate de que el path sea correcto
@@ -63,6 +64,7 @@ const MainComponent = () => {
       <Route path="/horoscope" element={<ProtectedRoute allowedRoles={['admin']}><Horoscope /></ProtectedRoute>} />
       <Route path="/lotto" element={<ProtectedRoute allowedRoles={['admin']}><Lotto /></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute allowedRoles={['visitante', 'admin']}><Inventory /></ProtectedRoute>} />
+      <Route path="/terms" element={<Terms />} />
     </Routes>
   );
 };
