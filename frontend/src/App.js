@@ -9,7 +9,7 @@ import Inventory from './components/Inventory';
 import Terms from './components/Terms';
 import { HashRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
-import { getRoleFromJWT } from './utils/AuthUtils'; // Asegúrate de que el path sea correcto
+import { getRoleFromJWT } from './utils/AuthUtils';
 import { Navigate } from 'react-router-dom';
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -64,7 +64,6 @@ const MainComponent = () => {
       <Route path="/horoscope" element={<ProtectedRoute allowedRoles={['admin']}><Horoscope /></ProtectedRoute>} />
       <Route path="/lotto" element={<ProtectedRoute allowedRoles={['admin']}><Lotto /></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute allowedRoles={['visitante', 'admin']}><Inventory /></ProtectedRoute>} />
-      <Route path="/terms" element={<Terms />} />
     </Routes>
   );
 };
@@ -73,7 +72,10 @@ function App() {
   return (
     <div className="App">
       <Router>
-        <MainComponent />
+        <Routes>
+          <Route path="/terms" element={<Terms />} />
+          <Route path="*" element={<MainComponent />} />
+        </Routes>
       </Router>
     </div>
   );
