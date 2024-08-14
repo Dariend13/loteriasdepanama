@@ -7,6 +7,8 @@ import Horoscope from './components/Horoscope';
 import Lotto from './components/Lotto';
 import Inventory from './components/Inventory';
 import Terms from './components/Terms';
+import PrivacyPolicy from '.components/PrivacyPolicy';
+import About from '.components/About';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { getRoleFromJWT } from './utils/AuthUtils';
@@ -74,6 +76,8 @@ function App() {
       <Router>
         <Routes>
           <Route path="/terms" element={<Terms />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<MainComponent />} />
         </Routes>
       </Router>
