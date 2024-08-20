@@ -64,6 +64,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const horoscopeRoutes = require('./routes/horoscopeRoutes')(wss);
 const lottopega3Routes = require('./routes/LottoRoutes')(wss);
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const compressionRoutes = require('./routes/compressionRoutes');
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -98,6 +99,7 @@ app.use('/api/horoscope', horoscopeRoutes);
 app.use('/api/lottopega3', lottopega3Routes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/api/inventory', inventoryRoutes);
+app.use('/api', compressionRoutes);
 
 // Todas las rutas no manejadas y que no son localhost se redirigen al frontend de React
 app.get('*', (req, res) => {

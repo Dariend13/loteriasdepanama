@@ -9,6 +9,7 @@ import Inventory from './components/Inventory';
 import Terms from './components/Terms';
 import PrivacyPolicy from './components/PrivacyPolicy';
 import About from './components/About';
+import FileCompressor from './components/FileCompressor';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { getRoleFromJWT } from './utils/AuthUtils';
@@ -79,6 +80,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="*" element={<MainComponent />} />
+          <Route path="/compress" element={<FileCompressor />} /> 
         </Routes>
       </Router>
     </div>
