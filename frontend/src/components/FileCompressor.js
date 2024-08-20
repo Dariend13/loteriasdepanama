@@ -13,9 +13,11 @@ const FileCompressor = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [compressionInfo, setCompressionInfo] = useState(null);
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
+    setCompressionInfo(null);
   };
 
   const handleCompress = async () => {
@@ -27,32 +29,23 @@ const FileCompressor = () => {
 
     try {
       const response = await axios.post('/api/compress', formData, {
-        responseType: 'blob',
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setProgress(percentCompleted);
         },
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      // Crear el nombre del archivo con el sufijo -compress antes de la extensión
-      const originalName = file.name;
-      const dotIndex = originalName.lastIndexOf('.');
-      const newName = `${originalName.substring(0, dotIndex)}-compress${originalName.substring(dotIndex)}`;
-
-      setDownloadUrl(url);
+      const { downloadUrl, originalSize, compressedSize } = response.data;
+      setDownloadUrl(downloadUrl);
+      setCompressionInfo({
+        originalSize,
+        compressedSize,
+        difference: originalSize - compressedSize,
+        reductionPercentage: ((originalSize - compressedSize) / originalSize) * 100,
+      });
       setSnackbarMessage('Archivo comprimido con éxito');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-
-      // Crear un enlace para descargar el archivo con el nuevo nombre
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', newName); // Asignar el nuevo nombre al archivo
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
       
     } catch (error) {
       console.error('Error al comprimir el archivo:', error);
@@ -66,6 +59,14 @@ const FileCompressor = () => {
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
+  };
+
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
   return (
@@ -95,9 +96,23 @@ const FileCompressor = () => {
         >
           {loading ? <CircularProgress size={24} /> : 'Comprimir y Descargar'}
         </Button>
-        {downloadUrl && (
+        {compressionInfo && (
           <Box sx={{ mt: 2 }}>
-            <Button variant="outlined" color="secondary" href={downloadUrl} download="compressed_file">
+            <Typography variant="body1">
+              Tamaño original: {formatBytes(compressionInfo.originalSize)}
+            </Typography>
+            <Typography variant="body1">
+              Tamaño comprimido: {formatBytes(compressionInfo.compressedSize)}
+            </Typography>
+            <Typography variant="body1">
+              Diferencia: {formatBytes(compressionInfo.difference)} ({compressionInfo.reductionPercentage.toFixed(2)}% reducido)
+            </Typography>
+            <Button
+              variant="outlined"
+              color="secondary"
+              href={downloadUrl}
+              download={`${file.name.split('.').slice(0, -1).join('.')}-compress.${file.name.split('.').pop()}`}
+            >
               Descargar archivo comprimido
             </Button>
           </Box>

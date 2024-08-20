@@ -15,44 +15,56 @@ router.post('/compress', upload.single('file'), async (req, res) => {
 
     try {
         let compressedFilePath;
+        let originalSize = fs.statSync(file.path).size;
+        let compressedSize;
+
         if (file.mimetype === 'application/pdf') {
-            // Compresión de archivos PDF
+            // Optimización básica de PDF con pdf-lib
             const pdfDoc = await PDFDocument.load(fs.readFileSync(file.path));
-            const pages = pdfDoc.getPages();
-
-            // Redimensionar imágenes dentro del PDF (si es posible)
-            for (const page of pages) {
-                const { width, height } = page.getSize();
-                page.scaleContent(0.8, 0.8); // Escala todo el contenido, incluidas las imágenes
-            }
-
-            const pdfBytes = await pdfDoc.save();
+            const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
             compressedFilePath = path.join('uploads', `compressed_${file.originalname}`);
             fs.writeFileSync(compressedFilePath, pdfBytes);
 
-            res.download(compressedFilePath, file.originalname, () => {
-                fs.unlinkSync(file.path);
-                fs.unlinkSync(compressedFilePath);
-            });
+            compressedSize = pdfBytes.length;
         } else if (file.mimetype.startsWith('image/')) {
             // Compresión de imágenes
             compressedFilePath = path.join('uploads', `compressed_${file.originalname}`);
             await sharp(file.path)
                 .resize({ width: 800 }) // Ajusta el tamaño según sea necesario
-                .jpeg({ quality: 70 }) // Ajusta la calidad según sea necesario
+                .jpeg({ quality: 50 })  // Ajusta la calidad para mejorar la compresión
                 .toFile(compressedFilePath);
 
-            res.download(compressedFilePath, file.originalname, () => {
-                fs.unlinkSync(file.path);
-                fs.unlinkSync(compressedFilePath);
-            });
+            compressedSize = fs.statSync(compressedFilePath).size;
         } else {
             res.status(400).send('Tipo de archivo no soportado');
+            return;
         }
+
+        // Enviar la respuesta con el tamaño original y comprimido
+        res.json({
+            downloadUrl: `/api/download/${path.basename(compressedFilePath)}`,
+            originalSize,
+            compressedSize,
+        });
+
+        // Eliminar archivo original
+        fs.unlinkSync(file.path);
+
     } catch (err) {
         console.error('Error al comprimir el archivo:', err);
         res.status(500).send('Error al comprimir el archivo');
     }
+});
+
+router.get('/download/:filename', (req, res) => {
+    const filePath = path.join(__dirname, '../uploads', req.params.filename);
+    res.download(filePath, (err) => {
+        if (err) {
+            console.error('Error al descargar el archivo:', err);
+        } else {
+            fs.unlinkSync(filePath); // Eliminar el archivo después de la descarga
+        }
+    });
 });
 
 module.exports = router;
