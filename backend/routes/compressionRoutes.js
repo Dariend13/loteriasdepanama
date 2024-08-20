@@ -3,6 +3,7 @@ const multer = require('multer');
 const sharp = require('sharp');
 const { PDFDocument } = require('pdf-lib');
 const fs = require('fs');
+const path = require('path');
 
 const router = express.Router();
 
@@ -13,27 +14,38 @@ router.post('/compress', upload.single('file'), async (req, res) => {
     const file = req.file;
 
     try {
+        let compressedFilePath;
         if (file.mimetype === 'application/pdf') {
             // Compresión de archivos PDF
             const pdfDoc = await PDFDocument.load(fs.readFileSync(file.path));
-            const pdfBytes = await pdfDoc.save({ useObjectStreams: false });
-            fs.writeFileSync(file.path, pdfBytes);
-            res.download(file.path, 'compressed.pdf', () => {
-                fs.unlinkSync(file.path); // Eliminar archivo después de la descarga
+            const pages = pdfDoc.getPages();
+
+            // Redimensionar imágenes dentro del PDF (si es posible)
+            for (const page of pages) {
+                const { width, height } = page.getSize();
+                page.scaleContent(0.8, 0.8); // Escala todo el contenido, incluidas las imágenes
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            compressedFilePath = path.join('uploads', `compressed_${file.originalname}`);
+            fs.writeFileSync(compressedFilePath, pdfBytes);
+
+            res.download(compressedFilePath, file.originalname, () => {
+                fs.unlinkSync(file.path);
+                fs.unlinkSync(compressedFilePath);
             });
         } else if (file.mimetype.startsWith('image/')) {
             // Compresión de imágenes
+            compressedFilePath = path.join('uploads', `compressed_${file.originalname}`);
             await sharp(file.path)
-                .resize({ width: 800 }) // Redimensionar la imagen si es necesario
-                .toBuffer((err, buffer) => {
-                    if (err) {
-                        throw new Error('Error al comprimir la imagen');
-                    }
-                    fs.writeFileSync(file.path, buffer);
-                    res.download(file.path, 'compressed_image.jpg', () => {
-                        fs.unlinkSync(file.path); // Eliminar archivo después de la descarga
-                    });
-                });
+                .resize({ width: 800 }) // Ajusta el tamaño según sea necesario
+                .jpeg({ quality: 70 }) // Ajusta la calidad según sea necesario
+                .toFile(compressedFilePath);
+
+            res.download(compressedFilePath, file.originalname, () => {
+                fs.unlinkSync(file.path);
+                fs.unlinkSync(compressedFilePath);
+            });
         } else {
             res.status(400).send('Tipo de archivo no soportado');
         }

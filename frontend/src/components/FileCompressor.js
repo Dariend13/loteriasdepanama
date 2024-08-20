@@ -35,10 +35,25 @@ const FileCompressor = () => {
       });
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
+
+      // Crear el nombre del archivo con el sufijo -compress antes de la extensión
+      const originalName = file.name;
+      const dotIndex = originalName.lastIndexOf('.');
+      const newName = `${originalName.substring(0, dotIndex)}-compress${originalName.substring(dotIndex)}`;
+
       setDownloadUrl(url);
       setSnackbarMessage('Archivo comprimido con éxito');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
+
+      // Crear un enlace para descargar el archivo con el nuevo nombre
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', newName); // Asignar el nuevo nombre al archivo
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      
     } catch (error) {
       console.error('Error al comprimir el archivo:', error);
       setSnackbarMessage('Error al comprimir el archivo');
@@ -63,7 +78,6 @@ const FileCompressor = () => {
           <Input 
             type="file" 
             onChange={handleFileChange} 
-            sx={{ color: '#000' }} 
             inputProps={{ accept: '.pdf,image/*' }} 
           />
         </Box>
