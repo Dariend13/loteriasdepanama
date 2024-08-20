@@ -6,24 +6,25 @@ const PrivacyPolicy = () => {
             <h1 style={{ textAlign: 'center' }}>Política de Privacidad</h1>
             <p>Última actualización: 12 de agosto de 2024</p>
 
-            <p>En Zipply Tech, respetamos tu privacidad y estamos comprometidos a proteger cualquier información que pueda ser recopilada de manera automática cuando utilizas nuestra aplicación. Sin embargo, es importante destacar que nuestra aplicación no requiere que te registres ni que inicies sesión, y no recopilamos ni almacenamos información personal identificable.</p>
+            <p>En Zipply Tech, respetamos tu privacidad y estamos comprometidos a protegerla. Es importante destacar que nuestra aplicación no requiere que te registres ni que inicies sesión, y no recopilamos, almacenamos, ni compartimos ninguna información personal o identificable, incluyendo direcciones IP, datos del dispositivo móvil, o cualquier otro tipo de información.</p>
 
             <h2>1. Información que No Recopilamos</h2>
-            <p>Nuestra aplicación no recopila información personal como nombres, direcciones de correo electrónico, números de teléfono u otra información identificable.</p>
+            <p>Nuestra aplicación no recopila ninguna información personal, incluyendo pero no limitándose a:</p>
+            <ul>
+                <li>Nombres</li>
+                <li>Direcciones de correo electrónico</li>
+                <li>Números de teléfono</li>
+                <li>Direcciones IP</li>
+                <li>Datos del dispositivo móvil (como tipo de dispositivo o sistema operativo)</li>
+            </ul>
 
-            <h2>2. Datos de Uso</h2>
-            <p>Nuestra aplicación puede recopilar información básica sobre el dispositivo que utilizas, como el tipo de dispositivo, sistema operativo y dirección IP, únicamente con fines de análisis y para mejorar la experiencia del usuario. Estos datos son anónimos y no se pueden utilizar para identificarte personalmente.</p>
+            <h2>2. Seguridad</h2>
+            <p>Dado que no recopilamos ninguna información, no es necesario implementar medidas de seguridad adicionales para proteger datos personales. Sin embargo, seguimos comprometidos con la creación de una experiencia de usuario segura y confiable.</p>
 
-            <h2>3. Uso de la Información Recopilada</h2>
-            <p>La información anónima que recopilamos se utiliza exclusivamente para mejorar la funcionalidad de la aplicación y garantizar que funcione correctamente en una variedad de dispositivos.</p>
-
-            <h2>4. Seguridad</h2>
-            <p>Nos comprometemos a proteger cualquier información que pueda ser recopilada automáticamente. Utilizamos medidas estándar de seguridad para garantizar la integridad de los datos, aunque es importante señalar que no almacenamos información personal.</p>
-
-            <h2>5. Cambios a esta Política</h2>
+            <h2>3. Cambios a esta Política</h2>
             <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Cualquier cambio se reflejará en esta página, y te recomendamos revisarla periódicamente.</p>
 
-            <h2>6. Contacto</h2>
+            <h2>4. Contacto</h2>
             <p>Si tienes alguna pregunta sobre nuestra política de privacidad, no dudes en contactarnos en <a href="mailto:support@zipplytech.com">support@zipplytech.com</a>.</p>
         </div>
     );
